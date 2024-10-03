@@ -1,42 +1,37 @@
-name: "CodeQL Advanced"
+
+name: Analyze and Upload SARIF
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches: [ main ]
   schedule:
-    - cron: '29 21 * * 6'
+    - cron: '45 15 * * 4'
 
 jobs:
-  analyze:
-    name: Analyze (${{ matrix.language }})
+  analyze-and-upload:
     runs-on: ubuntu-latest
     permissions:
       security-events: write
-      packages: read
       actions: read
       contents: read
 
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-        - language: java-kotlin
-          build-mode: manual 
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
-      with:
-        languages: ${{ matrix.language }}
-        build-mode: ${{ matrix.build-mode }}
+      - name: Install Analysis Tool
+        run: |
+          echo "Install your analysis tool here"
+          # For example, sudo apt-get install your-tool
 
-    - if: matrix.build-mode == 'manual'
-      run: mvn clean install
+      - name: Generate SARIF file
+        run: |
+          echo "Running analysis tool to generate SARIF"
+          # Substitute the following command with your actual command to generate SARIF
+          echo '{"schema": "https://sarifweb.azurewebsites.net/schemas/sarif-schema-2.1.0.json", "version": "2.1.0", "runs": []}' > results.sarif
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
+      - name: Upload SARIF file as an artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: SARIF-Artifact
+          path: results.sarif
