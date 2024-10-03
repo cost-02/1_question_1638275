@@ -42,25 +42,3 @@ jobs:
       uses: github/codeql-action/analyze@v3
       with:
         category: "/language:${{matrix.language}}"
-
-    # Step to run custom queries
-    - name: Run Custom CodeQL Queries
-      run: |
-        codeql database analyze codeql-database --format=sarif-latest --output=codeql-results.sarif
-
-    # Step to upload SARIF results
-    - name: Upload SARIF results
-      uses: github/codeql-action/upload-sarif@v1
-      with:
-        sarif_file: codeql-results.sarif
-
-    # Step to send notification (example using Slack)
-    - name: Send Notification
-      uses: rtCamp/action-slack@v2
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        SLACK_CHANNEL: '#your-channel'
-      with:
-        status: success
-        message: 'CodeQL analysis completed. Check the results!'
-
